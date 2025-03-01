@@ -9,4 +9,18 @@ Numpy简介
     2. ndarray，多维数组，具有矢量运算能力，快速、节省空间
     3. 矩阵运算，无需循环，可完成类似Matlab中的矢量运算
     4. 用于读写磁盘数据的工具以及用于操作内存映射文件的工具
+Numpy的属性
+    NumPy的数组类被称作ndarray，通常被称作数组。
+    ndarray.ndim
+    ndarray.shape
+    ndarray.size
+    ndarray.dtype
+    ndarray.itemsize
+    数组的维度
+        这是一个指示数组在每个维度上大小的整数元组。例如一个n排 m列的矩阵，它的shape属性将是(2,3),这个元组的长度显然是秩，即维度或者ndim属性。
 """
+
+
+import numpy as np
+
+arr = np
