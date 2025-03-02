@@ -149,3 +149,149 @@ tail -10f log.txt  # 动态查看文件的末尾的10行数据
       ![20250302221600](assets/20250302221600.png)
     - 进阶操作
       ![20250302221800](assets/20250302221800.png)
+
+### 五、用户和用户组
+
+- 用户组相关命令
+
+```shell
+# 查看所有的用户组
+getent group
+# 创建用户组
+groupadd 组名
+# 删除用户组
+groupdel 组名
+```
+
+- 用户相关命令
+
+```shell
+# 查看所有用户
+getent passwd
+# 创建用户。-g：指定用户所在组，不写则默认创建1个和该用户名一模一样的组，然后添加用户到该组中
+useradd [-g] [用户组] 用户名
+# 设置密码
+passwd 用户名
+# 删除用户。-r；删除用户的同时/home目录下该用户的目录也同步删除
+userdel [-r] 用户名
+# 查看用户信息
+id 用户名
+# 改变用户所在的组
+usermod -aG 组名 用户名  # append group：追加组
+```
+
+- 切换用户。"临时"借调权限相关命令
+
+```shell
+su 用户名  # 切换用户。root -> 其它无需密码；否则；需要密码			  
+sudo Linux命令  # 临时借调权限。Linux会检查/etc/sudoerrs文件，如果没有权限，则记录该行为到日志；如果有权限，则可以执行执行该命令。临时借调权限默认持续5分钟
+```
+
+### 六、权限管理
+
+- 图解
+  ![20250302223100](assets/20250302223100.png)
+- 代码实操
+
+```shell
+# 格式：chmod [-R] 权限 文件或者文件夹  -R：递归，只针对于文件夹有效 
+# 为了更好的表示权限，引入了数字权限的概念。无外乎四种：4 -> r、2 -> w、1 -> x、0 -> -
+# 它们能组合的情况如下:
+数字		对应的权限
+0			---
+1			--x
+2			-w-
+3			-wx
+4			r--
+5			r-x
+6			rw-
+7			rwx
+# 实际开发写法。遇到权限问题犹豫不决时直接777 
+chmod 777 1.txt  # 俗称：满权限
+
+# 格式:  chown [-R] [用户][:][用户组] 文件或者文件夹路径  -R：递归，只针对于文件夹有效
+chown zhangsan 1.txt	# 改变：属主
+chown :itcast 1.txt		# 改变：属组
+chown lisi:itheima 1.txt # 改变：属主和属组
+chown -R zhangsan aa	# 改变：属主，包括子级
+```
+
+### 七、系统管理命令
+
+```shell
+# 格式
+systemctl [start | stop | status | disable | enable | restart] 服务名
+# 常用的服务
+NetworkManager			# 主网络服务
+network					# 副网络服务
+firewalld				# 防火墙
+sshd					# 远程连接服务
+
+# 扩展：如何修改虚拟机的IP地址
+vim /etc/sysconfig/network-scripts/ifcfg-ens33
+# 修改、保存，然后重启网卡
+systemctl restart network
+```
+
+### 八、软连接和硬链接
+
+```shell
+# 软连接：类似于windows的快捷方式
+# 格式：ln -s 要被连接的文件路径 软连接名
+ln -s /etc/sysconfig/network-scripts/ifcfg-ens33 ip
+
+# 硬链接：类似于动态备份（修改a.txt则c.txt也会同步变化）
+# 格式: ln 要被连接的文件路径 硬连接名
+ln a.txt c.txt
+```
+
+### 九、ip、网络、端口
+
+```shell
+# 查看本机ip
+ifconfig
+
+# ping：测试网络是否通畅
+# 格式：ping [-c num] 要测试连接的网站或ip
+ping www.baidu.com  # 一直ping，一直发包
+ping -c 3 www.baidu.com	 # 只发送3个包，只测试3次
+
+# wget：可以根据url地址联网下载资源
+# 格式: wget url地址
+wget https://img.zjol.com.cn/mlf/dzw/zjczw/gun/202011/W020201118626559068829.jpeg
+
+# curl：模拟浏览器向URL地址发出请求获取响应信息
+curl https://ai.itheima.com/
+
+# IP：设备在网络中的唯一标识
+# 端口号：程序在设备上的唯一标识。Linux系统端口号范围：0~65535。0~1023已经被用作系统端口或保留端口，我们自定义端口的时尽量规避
+netstat -anp  # 查看本机所有端口号。
+netstat -anp | grep 3306  # 查看3306端口号占用情况
+```
+
+### 十、进程相关
+
+```shell
+# 进程：指的是可执行程序、文件
+ps -ef  # 查看本机运行的所有进程
+ps -ef | grep mysql	 # 查看本机和MySQL相关的进程
+kill -9 进程的pid  # 根据pid值, 强制杀死进程
+```
+
+### 十一、压缩和解压缩
+
+```shell
+# 区分压缩协议好坏可以参考三个维度：压缩速度(写)、解压速度(读)、压缩后文件占比
+# tarball：归档操作
+# 压缩格式：z：gzip协议；c：创建；v：显示过程；f：文件
+tar -cvf 压缩包名.tar 要被压缩的文件1 文件2 文件夹...  # 只归档(多个文件 -> 1个文件)，不压缩
+tar -zcvf 压缩包名.tar.gz 要被压缩的文件1 文件2 文件夹...  # 采用tarball + gzip协议，文件较小
+# 例如:
+tar -zcvf 1.txt 2.txt 3.txt my.tar.gz
+
+# x：解压缩
+tar -xvf 压缩包名.tar [-C] [解压到的路径]  # 不写-C默认解压到当前路径
+tar -zxvf 压缩包名.tar.gz [-C] [解压到的路径]  # 不写-C就默认解压到当前路径
+# 例如:
+tar -zxvf my2.tar.gz -C aa	  # 把压缩包my2解压到aa文件夹
+```
