@@ -115,3 +115,27 @@ echo 'hello world'  # 打印hello world
 echo 'hello' > 1.txt  # 把hello覆盖写入到1.txt文件
 echo 'hello' >> 1.txt   # 把hello字符串追加写入到1.txt文件
 ```
+
+- 管道符、统计、过滤命令
+
+```shell
+# 准备数据
+echo 'hello python' > 1.txt
+echo 'world python' >> 1.txt
+
+grep -n 'world' 1.txt  # -n：显示行号
+wc -lwc 2.txt  # 统计行数、单词数、字节数  -m：字符数
+
+# | 管道命令。把前面命令的执行结果当做后面的数据源
+ls / | wc -w
+```
+
+- tail、反引号
+
+```shell
+echo `pwd`  # 反引号中的内容当做Linux命令
+
+tail 3.txt  # 查看文件末尾10行（默认）的数据
+tail -5 3.txt  # 查看文件末尾5行的数据据
+tail -10f log.txt  # 动态查看文件的末尾的10行数据
+```
