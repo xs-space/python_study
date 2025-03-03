@@ -90,3 +90,36 @@ from student;
 truncate table student;
 truncate student; # 效果同上
 ```
+
+### 三、备份表数据
+
+```mysql
+# 1.查看源表数据
+select *
+from teacher;
+
+# 2.备份表数据。只会备份表数据、列名、数据类型，不会备份约束（主键约束、唯一约束，因为它们的底层其实是索引）
+-- 场景1：备份表不存在
+-- 格式：create table 备份表名 select * from 源表名 where 条件...;
+create table teacher_tmp
+select *
+from teacher;
+
+-- 场景2：备份表存在
+-- 格式：insert into 备份表名 select * from 源表名 where 条件...;
+insert into teacher_tmp
+select *
+from teacher;
+
+# 3.查看备份表的数据
+select *
+from teacher_tmp;
+-- 清空备份表的数据
+truncate table teacher_tmp;
+
+# 4.模拟紧急情况下的"数据恢复"
+truncate table teacher;
+insert into teacher
+select *
+from teacher_tmp;
+```
