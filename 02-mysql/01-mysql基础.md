@@ -40,16 +40,19 @@ DCL：数据控制语言。主要操作用户、设置权限、隔离级别
 ```
 
 ### 四、DDL语句
+
 - 操作数据库
+
 ```mysql
 # 1.查看所有的数据库
 show databases;
 
 # 2.创建数据库
 # 格式：create database if not exists 数据库名 charset '字符集';
-create database day01;   -- 默认字符集
-create database day02 charset 'gbk';    -- 指字符集: gbk
-create database if not exists day01;    -- 数据库不存在就创建，存在什么都也不做
+create database day01; -- 默认字符集
+create database day02 charset 'gbk'; -- 指字符集: gbk
+create database if not exists day01;
+-- 数据库不存在就创建，存在什么都也不做
 
 # 3.查看(单个)数据库的详细信息
 show create database day01;
@@ -66,7 +69,9 @@ use day01;
 # 7.查看当前使用的数据库
 select database();
 ```
+
 - 操作数据表
+
 ```mysql
 # 1.查看（当前数据库）所有的数据表
 show tables;
@@ -83,16 +88,16 @@ show tables;
     );
  */
 # 需求：创建学生表student。字段（学生编号、姓名 非空约束、性别、年龄）
-create table if not exists student(
-    id int,                      # 学生编号
-    name varchar(20) not null,   # 学生姓名，非空
+create table if not exists student
+(
+    id     int,                  # 学生编号
+    name   varchar(20) not null, # 学生姓名，非空
     gender varchar(10),          # 学生性别
-    age int                      # 学生年龄
+    age    int                   # 学生年龄
 );
 
 # 3.查看（单个）数据表的详细信息
 show create table student;
-desc student;   # 查看表的字段（有哪些字段、字段的数据类型、约束等...）
 
 # 4.修改表名
 -- 格式：rename table 旧表名 to 新表名;
@@ -100,4 +105,32 @@ rename table student to stu;
 
 # 5.删除指定的数据表
 drop table stu;
+```
+
+- 操作字段
+
+```mysql
+# 1.查看表的所有列
+desc student;
+
+# 2.新增列
+-- 格式：alter table 表名 add 列名 数据类型 [约束];
+alter table student
+    add kongfu varchar(20) not null;
+
+# 3. 修改列、数据类型和约束
+-- 格式：alter table 表名 modify 列名 数据类型 [约束];
+alter table student
+    modify kongfu int;
+-- 不加约束则会取消之前的约束
+
+# 4.修改列、列名、数据类型和约束
+-- 格式：alter table 表名 change 旧列名 新列名 数据类型 [约束];
+alter table student
+    change kongfu gf varchar(10) not null;
+
+# 5.删除指定的列
+-- 格式：alter table 表名 drop 列名;
+alter table student
+    drop gf;
 ```
