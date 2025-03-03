@@ -21,8 +21,83 @@
 ```shell
 略
 ```
+
 ### 三、SQL语句详解
+
 - 分类
+
 ```shell
-  -- DDL：数据定义语言。主要操作：数据库、数据表、列名
+DDL：数据定义语言。主要操作数据库、数据表、列名
+关键字：create、drop、alter、show...
+
+DML：数据操作语言。主要操作表数据、更新操作（增删改）
+关键字：insert、delete、update
+
+DQL：数据查询语言。主要操作表数据、查询操作
+关键字：select、from、where
+
+DCL：数据控制语言。主要操作用户、设置权限、隔离级别
+```
+
+### 四、DDL语句
+- 操作数据库
+```mysql
+# 1.查看所有的数据库
+show databases;
+
+# 2.创建数据库
+# 格式：create database if not exists 数据库名 charset '字符集';
+create database day01;   -- 默认字符集
+create database day02 charset 'gbk';    -- 指字符集: gbk
+create database if not exists day01;    -- 数据库不存在就创建，存在什么都也不做
+
+# 3.查看(单个)数据库的详细信息
+show create database day01;
+
+# 4.修改数据库的（字符集）
+alter database day02 charset 'utf8';
+
+# 5.删除指定的数据库
+drop database day02;
+
+# 6.切库
+use day01;
+
+# 7.查看当前使用的数据库
+select database();
+```
+- 操作数据表
+```mysql
+# 1.查看（当前数据库）所有的数据表
+show tables;
+
+# 2.创建数据表
+/*
+格式:
+    create table [if not exists] 数据表名(
+        列名1 数据类型 [约束],
+        列名2 数据类型 [约束],
+        列名3 数据类型 [约束],
+        ...
+        列名n 数据类型 [约束]   # 最后1个列名结尾没有逗号
+    );
+ */
+# 需求：创建学生表student。字段（学生编号、姓名 非空约束、性别、年龄）
+create table if not exists student(
+    id int,                      # 学生编号
+    name varchar(20) not null,   # 学生姓名，非空
+    gender varchar(10),          # 学生性别
+    age int                      # 学生年龄
+);
+
+# 3.查看（单个）数据表的详细信息
+show create table student;
+desc student;   # 查看表的字段（有哪些字段、字段的数据类型、约束等...）
+
+# 4.修改表名
+-- 格式：rename table 旧表名 to 新表名;
+rename table student to stu;
+
+# 5.删除指定的数据表
+drop table stu;
 ```
