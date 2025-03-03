@@ -134,3 +134,67 @@ alter table student
 alter table student
     drop gf;
 ```
+
+### DML语句
+
+- 操作表数据
+
+```mysql
+# -------------------- 案例1：DML语句操作数据表 增 --------------------
+/*
+格式：
+    insert into 表名(列名1, 列名2...) values(值1, 值2...);
+    insert into 表名 values(值1, 值2...);
+    insert into 表名 values(null, 值2...);
+    insert into 表名 values
+        (值1, 值2...),
+        (值1, 值2...),
+        ......
+        (值1, 值2...);
+
+细节：
+    1.添加表数据时值的个数和类型要和列名保持一致
+    2.如果不写列名则默认是全列名，即：必须给所有的列依次赋值
+    3.如果是主键列且配合有自增，则传值时可以直接传入null，系统会根据最大主键值 +1，然后存储
+    4.如果同时添加多行值，多组值之间用逗号隔开，最后一组值的后边写分号
+*/
+# 1.添加单条数据.
+insert into student(id, name, gender, age)
+values (1, '乔峰', '男', 33);
+insert into student(name, age) value ('虚竹', 30);
+
+# 2.同时添加多条数据
+insert into student
+values (1, '阿朱', '女', 30),
+       (2, '李清露', '女', 24),
+       (3, '王语嫣', '女', 19);
+
+# -------------------- 案例2：DML语句操作数据表 改 --------------------
+-- 格式：update 表名 set 字段名1=新值, 字段名2=新值... where 条件;
+update student
+set id=10,
+    name='萧峰'
+where id = 1;
+
+-- 如果不写where条件则一下子改变所有
+update student
+set id=1,
+    name='无崖子';
+
+# -------------------- 案例3：DML语句操作数据表 删 --------------------
+-- 格式：delete from 表名 where 条件;
+delete
+from student
+where age > 25;
+
+-- 不写where条件则一次删除所有
+delete
+from student;
+
+# -------------------- 案例4：DQL语句操作数据表 查 --------------------
+-- 查询表中所有的数据
+select *
+from day01.student; # 数据库名.数据表名
+select *
+from student; # 如果直接写数据表则默认用的是当前库中的表
+```
