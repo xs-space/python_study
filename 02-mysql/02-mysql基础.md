@@ -124,7 +124,7 @@ select *
 from teacher_tmp;
 ```
 
-### 单表查询
+### 四、单表查询
 
 ```mysql
 # 1.创建商品表
