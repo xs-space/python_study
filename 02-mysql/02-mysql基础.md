@@ -13,6 +13,8 @@
     - 多表约束：
         - 外键约束：foreign key
 
+- 主键约束
+
 ```mysql
 # 1.建库、切库、查表
 drop database if exists day02; -- 如果存在就删除day02数据库
@@ -42,6 +44,34 @@ values (10, '牧尘', '男', 31);
 desc student; -- 查看表结构
 select *
 from student; -- 查看表数据
+```
+
+- 单表约束
+
+```mysql
+# 1.建库、切库、查表
+drop database if exists day02; -- 如果存在就删除day02数据库
+create database day02;
+use day02;
+show tables;
+
+# 2.创建teacher表。字段（id 主键约束；name 非空；phone 唯一约束；address 默认：北京）
+create table teacher
+(
+    id      int primary key auto_increment, # 老师id  主键约束（非空、唯一）
+    name    varchar(10) not null,           # 姓名  非空约束，必须传值，不能是null
+    phone   varchar(11) unique,             # 手机号  唯一约束，不能重复
+    address varchar(50) default '北京'      # 住址  默认：北京
+);
+
+# 3.添加表数据
+insert into teacher
+values (null, '夯哥', '13112345678', '新乡');
+
+# 4. 查看表结构和表数据
+desc teacher;
+select *
+from teacher;
 ```
 
 ### 二、delete和truncate的区别
