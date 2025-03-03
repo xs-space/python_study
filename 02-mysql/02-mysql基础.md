@@ -1,4 +1,4 @@
-### 约束
+### 一、约束
 
 - 概述：
     - 就是在数据类型的基础上对某列值进一步做限定。如：非空、唯一等...
@@ -14,37 +14,49 @@
         - 外键约束：foreign key
 
 ```mysql
--- 1. 建库, 切库, 查表.
-drop database if exists day02; -- 如果存在, 就删除day02数据库.
+# 1.建库、切库、查表
+drop database if exists day02; -- 如果存在就删除day02数据库
 create database day02;
 use day02;
 show tables;
 
--- 2. 创建学生表, 字段(id, name, gender, age)
+# 2. 创建学生表。字段（id、name、gender、age）
 drop table student;
 create table student
 (
-    id     int primary key auto_increment, # 学生id, 主键(非空, 唯一), 自增
+    id     int primary key auto_increment, # 学生id  主键（非空、唯一、自增）
     name   varchar(20),                    # 学生姓名
     gender varchar(10),                    # 学生性别
     age    int                             # 学生年龄
 );
 
--- 3. 给学生表添加数据.
+# 3.给学生表添加数据
 insert into student
 values (1, '萧炎', '男', 33);
 insert into student
 values (2, '林动', '男', 33);
 insert into student
 values (10, '牧尘', '男', 31);
-insert into student
-values (2, '萧薰儿', '女', 25); -- 报错, 主键2已经存在了.  主键: 唯一性.
-insert into student
-values (null, '萧薰儿', '女', 25);
--- 报错, 主键: 不能为空.
 
--- 4. 查看学生表结构 和 数据.
-desc student; -- 查看表结构.
+# 4.查看学生表结构和数据
+desc student; -- 查看表结构
 select *
-from student; -- 查看表数据.
+from student; -- 查看表数据
+```
+
+### 二、delete和truncate的区别
+
+```mysql
+/*
+区别：
+    1.delete from只删除表数据，不会重置主键id；truncate table相当于把表摧毁了，然后创建一张和该表一模一样的新表
+    2.delete from 属于DML语句，可以结合事务一起使用；truncate table属于DDL语句.
+ */
+# 1.delete from方式删除表数据
+delete
+from student;
+
+# 3. truncate table方式删除表数据
+truncate table student;
+truncate student; # 效果同上
 ```
