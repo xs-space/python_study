@@ -665,3 +665,54 @@ from category c
          left join products p on c.cid = p.category_id -- 外连接查询
 group by cname;
 ```
+
+- 自关联查询
+
+```mysql
+/*
+自关联查询
+    概述
+        表自己和自己做关联查询，称之为：自连接(自关联)查询。一般用于省市区三级联动
+    格式
+        |--------- 主查询 ---------- |  |-------- 子查询 ----------|
+        select * from 表A where 字段 > (select 列名 from 表B where ....);
+*/
+# 准备数据
+-- areas.sql脚本文件
+
+# 1.查看所有省的、市、县的信息
+select province.id,
+       province.title, -- 省的id, 省的名字
+       city.id,
+       city.title,     -- 市的id, 省的名字
+       county.id,
+       county.title    -- 县区的id, 省的名字
+from areas as county -- 县区表
+         join areas as city on county.pid = city.id -- 市表
+         join areas as province on city.pid = province.id;
+-- 省表
+
+# 2.在上述查询基础上查看河南省所有的信息
+select province.id,
+       province.title, -- 省的id, 省的名字
+       city.id,
+       city.title,     -- 市的id, 省的名字
+       county.id,
+       county.title    -- 县区的id, 省的名字
+from areas as county -- 县区表
+         join areas as city on county.pid = city.id -- 市表
+         join areas as province on city.pid = province.id -- 省表
+where province.title = '河南省';
+
+# 3.在上述查询基础上, 查看: 新乡市所有的信息
+select province.id,
+       province.title, -- 省的id, 省的名字
+       city.id,
+       city.title,     -- 市的id, 省的名字
+       county.id,
+       county.title    -- 县区的id, 省的名字
+from areas as county -- 县区表
+         join areas as city on county.pid = city.id -- 市表
+         join areas as province on city.pid = province.id -- 省表
+where city.title = '新乡市';
+```
