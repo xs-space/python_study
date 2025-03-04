@@ -74,6 +74,24 @@ select *
 from teacher;
 ```
 
+- 多表约束
+
+```shell
+概述
+    它是用来描述多表关系的，一般在外表（从表）中做限定
+格式
+    场景1：建表时创建和以前写字段的方式一样
+        [constraint 外键约束名] foreign key(外键列名) references 主表名(主键列名);
+    场景2：建表后创建
+        alter table 表名 add [constraint 外键约束名] foreign key(外键列名) references 主表名(主键列名);
+    场景3: 删除外键约束.
+        alter table 表名 drop foreign key 外键约束名;
+    注意事项
+        1.多表关系之一对多建表原则：在"多"的一方新建一列充当外键列，去关联"一"的一方的主键列
+        2.多表关系中有外键的表称之为：外表（从表），有主键的表称之为主表
+        3.外键约束特点：外表的外键列不能出现主表的主键列没有的数据
+```
+
 ### 二、delete和truncate的区别
 
 ```mysql
@@ -454,5 +472,196 @@ group by category_id;
 
 ### 五、多表查询
 
-- 一对多
+- 一对多建表
   ![20250304222500](assets/20250304222500.png)
+
+```mysql
+# 数据准备
+-- 部门表
+create table dept
+(
+    id   int primary key auto_increment, # 部门id、主键、自增
+    name varchar(10)                     # 部门名
+);
+-- 员工表
+create table employee
+(
+    id      int primary key auto_increment,                          # 员工id
+    name    varchar(20),                                             # 员工姓名
+    salary  int,                                                     # 工资
+    dept_id int,                                                     # 部门id
+    constraint fk_dept_em foreign key (dept_id) references dept (id) # 设置员工表和部门表的外键约束
+);
+-- 添加数据
+insert into dept
+values (null, '人事部'),
+       (null, '财务部'),
+       (null, '研发部');
+insert into employee
+values (null, '刘备', 5000, 1);
+insert into employee
+values (null, '关羽', 50000, 3);
+-- 手动删除外键约束
+alter table employee
+    drop foreign key fk_dept_em;
+-- 手动添加外键约束
+alter table employee
+    add foreign key (dept_id) references dept (id);
+```
+
+- 交叉查询和连接查询
+
+```mysql
+/*
+多表查询
+    概念
+        多表查询的本质就是根据关联条件把多张表变成1张表，然后进行单表查询
+    分类
+        交叉查询
+        连接查询
+            内连接
+            外连接
+            自关联(自连接)查询
+        子查询
+*/
+# 准备数据
+CREATE TABLE hero
+(
+    hid       INT PRIMARY KEY, # 英雄id
+    hname     VARCHAR(255),    # 英雄名
+    kongfu_id INT              # 功夫id
+);
+CREATE TABLE kongfu
+(
+    kid   INT PRIMARY KEY, # 功夫id
+    kname VARCHAR(255)     # 功夫名
+);
+INSERT INTO hero
+VALUES (1, '鸠摩智', 9),
+       (3, '乔峰', 1),
+       (4, '虚竹', 4),
+       (5, '段誉', 12);
+INSERT INTO kongfu
+VALUES (1, '降龙十八掌'),
+       (2, '乾坤大挪移'),
+       (3, '猴子偷桃'),
+       (4, '天山折梅手');
+# 交叉查询：查询结果是两张表的笛卡尔积。即：表A的总条数 * 表B的总条数，会有大量的脏数据，实际开发一般不用
+-- 格式：select * from 表A, 表B;
+select *
+from hero,
+     kongfu;
+
+# 连接查询
+-- 内连接：查询结果是表的交集
+-- 场景1：显式内连接。
+-- 格式：select * from 表A inner join 表B on 关联条件 where...;
+select *
+from hero h
+         inner join kongfu kf on h.kongfu_id = kf.kid;
+select *
+from hero h
+         join kongfu kf on h.kongfu_id = kf.kid;
+-- inner 可以省略不写
+-- 场景2：隐式内连接。格式：select * from 表A, 表B  where 关联条件...;
+select *
+from hero h,
+     kongfu kf
+where h.kongfu_id = kf.kid;
+
+-- 外连接
+-- 场景1：左外连接。查询结果是左表全集 + 交集
+-- 格式：select * from 表A left outer join 表B on 关联条件 where...;
+select *
+from hero h
+         left outer join kongfu kf on h.kongfu_id = kf.kid;
+select *
+from hero h
+         left join kongfu kf on h.kongfu_id = kf.kid;
+-- outer可以省略不写
+-- 场景2：右外连接。查询结果是右表全集 + 交集
+-- 格式：select * from 表A right outer join 表B on 关联条件 where...;
+select *
+from hero h
+         right outer join kongfu kf on h.kongfu_id = kf.kid;
+select *
+from hero h
+         right join kongfu kf on h.kongfu_id = kf.kid; -- outer可以省略不写.
+```
+
+- 子查询
+
+```mysql
+/*
+子查询
+    概述
+        实际开发中，如果1个查询语句的查询条件需要依赖另一个查询语句的查询结果，这种写法就叫子查询。外边的查询叫主查询(父查询)，里边的查询叫子查询
+    格式
+        |--------- 主查询 ---------- |  |-------- 子查询 ----------|
+        select * from 表A where 字段 > (select 列名 from 表B where ....);
+*/
+# 准备数据
+create table category
+(                                  # 分类表
+    cid   varchar(32) primary key, # 分类id
+    cname varchar(50)              # 分类名
+);
+create table products
+(                                        # 商品表
+    pid         varchar(32) primary key, # 商品id
+    pname       varchar(50),             # 商品名
+    price       int,                     # 商品价格
+    flag        varchar(2),              # 是否上架标记为：1表示上架、0表示下架
+    category_id varchar(32),
+    constraint products_fk foreign key (category_id) references category (cid)
+);
+INSERT INTO category(cid, cname)
+VALUES ('c001', '家电');
+INSERT INTO category(cid, cname)
+VALUES ('c002', '服饰');
+INSERT INTO category(cid, cname)
+VALUES ('c003', '化妆品');
+INSERT INTO category(cid, cname)
+VALUES ('c004', '奢侈品');
+INSERT INTO products(pid, pname, price, flag, category_id)
+VALUES ('p001', '联想', 5000, '1', 'c001');
+INSERT INTO products(pid, pname, price, flag, category_id)
+VALUES ('p002', '海尔', 3000, '1', 'c001');
+INSERT INTO products(pid, pname, price, flag, category_id)
+VALUES ('p003', '雷神', 5000, '1', 'c001');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p004', 'JACK JONES', 800, '1', 'c002');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p005', '真维斯', 200, '1', 'c002');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p006', '花花公子', 440, '1', 'c002');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p007', '劲霸', 2000, '1', 'c002');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p008', '香奈儿', 800, '1', 'c003');
+INSERT INTO products (pid, pname, price, flag, category_id)
+VALUES ('p009', '相宜本草', 200, '1', 'c003');
+# 1.查询哪些分类的商品已经上架
+-- Step1：查询上架的商品的分类id
+select distinct category_id
+from products
+where flag = 1;
+-- Step2：根据上一步查出的分类id找其对应的分类名
+select *
+from category
+where cid in ('c001', 'c002', 'c003');
+-- Step3：把上述的分解步骤合并到一起
+select *
+from category
+where cid in (select distinct category_id
+              from products
+              where flag = 1);
+
+# 2。查询所有分类商品的个数
+select cname,
+       count(category_id) total_cnt, -- 基于业务, 这里写 category_id 更合适.
+       count(pid)         total_cnt2 -- 基于效率, 这里写 pid 更合适.
+from category c
+         left join products p on c.cid = p.category_id -- 外连接查询
+group by cname;
+```
