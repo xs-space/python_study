@@ -451,3 +451,8 @@ select category_id
 from product
 group by category_id;
 ```
+
+### 五、多表查询
+
+- 一对多
+  ![20250304222500](assets/20250304222500.png)
