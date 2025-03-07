@@ -1,4 +1,4 @@
-### 一、KNN算法简介
+**### 一、KNN算法简介
 
 ```text
 K-近邻算法（K Nearest Neighbor，简称KNN）
@@ -113,6 +113,32 @@ K值的选择
         - 调用fit_transform(X)将特征进行归一化缩放
 
   归一化受到最大值与最小值的影响，这种方法容易受到异常数据的影响, 鲁棒性较差，适合传统精确小数据场景
+- 标准化
+  通过对原始数据进行标准化，转换为均值为0标准差为1的标准正态分布的数据
+  ![20250307220300](assets/20250307220300.png)
+    - mean为特征的平均值
+    - σ为特征的标准差
 
+  - 数据归一化的API实现
+    `sklearn.preprocessing. StandardScaler()`
+  - 调用fit_transform(X)将特征进行归一化缩放
+    ```python
+# 1.导入工具包
+from sklearn.preprocessing import MinMaxScaler,StandardScaler
+
+# 2.数据(只有特征)
+x = [[90, 2, 10, 40], [60, 4, 15, 45], [75, 3, 13, 46]]
+
+# 3.实例化(归一化,标准化)
+# process =MinMaxScaler()
+process =StandardScaler()
+
+# 4.fit_transform 处理1
+data =process.fit_transform(x)
+# print(data)
+
+print(process.mean_)
+print(process.var_)
+```
 
 
